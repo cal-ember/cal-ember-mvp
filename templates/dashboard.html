@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cal Ember - Dashboards</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='landing.css') }}">
+    <!-- Tableau API Script -->
+    <script src='https://public.tableau.com/javascripts/api/viz_v1.js'></script>
+    <style>
+        /* General styling */
+        main {
+            padding: 20px; /* Reduce padding */
+            max-width: 90%; /* Use a percentage to expand to near full width */
+            margin: 0 auto; /* Center the content */
+        }
+
+        .header-container {
+            max-width: 90%; /* Use a percentage for the header to match main */
+            padding: 0; /* Remove extra padding */
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .description, .disclaimer {
+            text-align: center; /* Centers the text horizontally */
+            margin: 0 auto 15px auto; /* Ensures the element is centered within its container */
+            font-size: 0.9em;
+            line-height: 1.6em;
+            color: #555; /* Text color */
+            width: 100%; /* Full width to match the container */
+        }
+
+        .large-description {
+            text-align: center;
+            font-size: 1.2em;
+            line-height: 1.6em;
+            color: #555;
+            max-width: 800px;
+            margin: 0 auto 30px auto;
+        }
+
+
+
+        .disclaimer {
+            font-size: 0.6em; /* Keep the font size small */
+            color: #888; /* Keep the color as is */
+            margin-top: 10px; /* Add some spacing above */
+            text-align: center; /* Center the text horizontally */
+            max-width: 95%; /* Match the dashboard-container width */
+            margin-left: auto; /* Center align within the container */
+            margin-right: auto; /* Center align within the container */
+        }
+
+        .wide-container {
+            max-width: 1400px; /* Matches the dashboard-container width */
+            margin: 0 auto 20px auto; /* Center align and add spacing */
+            padding: 0 20px; /* Optional: Add padding for better readability */
+        }
+
+        /* Layout for the dashboard and legend */
+        .dashboard-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            max-width: 95%; /* Adjust to fill most of the screen width */
+            margin: 0 auto; /* Center the content */
+            gap: 10px; /* Reduce gap between dashboard and legend */
+        }
+
+        .tableauEmbed {
+            flex: 3.25; /* Allocate more space for the dashboard */
+            width: 100%;
+            height: 850px; /* Increased height for better usability */
+            border: 1px solid #ddd;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .tableauEmbed object {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .legend {
+            flex: 0.75; /* Allocate less space to the legend */
+            font-size: 0.7em;
+            color: #333;
+            border: 1px solid #ddd;
+            padding: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            background-color: #f9f9f9;
+        }
+
+        .legend table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        .legend th,
+        .legend td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        .legend th {
+            font-weight: bold;
+            background-color: #f2f2f2;
+        }
+
+        .legend-container {
+            flex: 0.75;
+            font-size: 0.7em;
+            color: #333;
+            border: 1px solid #ddd;
+            padding: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            background-color: #f9f9f9;
+        }
+
+        .legend-container h3 {
+            margin-top: 0;
+        }
+
+        .legend-container table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        .legend-container th,
+        .legend-container td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        .legend-container th {
+            font-weight: bold;
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <div class="logo-container">
+                <a href="/">
+                    <img src="{{ url_for('static', filename='images/calember-logo.png') }}" alt="Cal Ember Logo" class="logo">
+                </a>
+            </div>
+            <nav class="main-nav">
+                <a href="/" class="nav-link">Home</a>
+                <a href="/fire-hazard-lookup" class="nav-link">Fire Hazard Lookup</a>
+                <a href="/prediction-tool" class="nav-link">Fire Damage Prediction</a>
+                <a href="/dashboard" class="nav-link">Dashboards</a>
+                <a href="/about-us" class="nav-link">About Us</a>
+            </nav>
+        </div>
+    </header>
+    <main role="main">
+        <h1>Fire Damage & Insurance Dashboards</h1>
+        <p class="description large-description">
+            Below are dashboards for the following: Median Fire Damage by Zip Code, Average Insurance by Zip Code, and Insurance Trends Over Time. 
+            Data is taken from the <a href="https://www.insurance.ca.gov/0400-news/0200-studies-reports/0250-homeowners-study/#A" target="_blank">California Department of Insurance</a> 
+            and the <a href="https://gis.data.cnra.ca.gov/datasets/CALFIRE-Forestry::fire-hazard-severity-zones-in-sra-effective-april-1-2024-with-lra-recommended-2007-2011" target="_blank">California Department of Forestry and Fire Protection</a>. 
+            <i>You can hover over the map visualizations to view specific information regarding zip codes and metrics.</i>
+        </p>
+        
+        
+        <!-- First Tableau Dashboard: Damage Map Dashboard -->
+        <h2 style="text-align: center;">Damage Map Dashboard</h2>
+        <div class="wide-container">
+            <p class="description">
+                Explore historical median property damage levels caused by wildfires per zip code. Filter by home type and year(s) of interest, explore how damage levels have changed over time, and identify zip codes with high historical rates of wildfire damage. Hover over the map directly to display detailed damage levels and zip codes. (Data source: Cal Fire Damage Inspection Data from 2013 to 2021).
+            </p>
+        </div>
+        <div class="dashboard-container">
+            <div class="tableauEmbed" id="viz1732772784681">
+                <noscript>
+                    <a href="#">
+                        <img alt="Damage Map Dashboard" src="https://public.tableau.com/static/images/DS/DS210ACalEmberDamagesMap/DamageMapDashboard/1_rss.png" style="border: none" />
+                    </a>
+                </noscript>
+                <object class="tableauViz">
+                    <param name="host_url" value="https%3A%2F%2Fpublic.tableau.com%2F" />
+                    <param name="embed_code_version" value="3" />
+                    <param name="site_root" value="" />
+                    <param name="name" value="DS210ACalEmberDamagesMap/DamageMapDashboard" />
+                    <param name="tabs" value="no" />
+                    <param name="toolbar" value="yes" />
+                    <param name="animate_transition" value="yes" />
+                    <param name="display_static_image" value="yes" />
+                    <param name="display_spinner" value="yes" />
+                    <param name="display_overlay" value="yes" />
+                    <param name="display_count" value="yes" />
+                    <param name="language" value="en-US" />
+                    <param name="filter" value="publish=yes" />
+                </object>
+            </div>
+            <div class="legend">
+                <h2>Legend</h2>
+                <h3>Home Type</h3>
+                <table>
+                    <tr>
+                        <th>HC</th>
+                        <td>Condominium Unit Owner, defined as HO6 or equivalent. Homeowners insurance sold to condominium owners occupying or renting out the insured property.</td>
+                    </tr>
+                    <tr>
+                        <th>HO</th>
+                        <td>Homeowners, defined as HO1, HO2, HO3, HO5, HO8, or equivalent. Homeowners insurance sold to owners occupying the insured property.</td>
+                    </tr>
+                    <tr>
+                        <th>MO</th>
+                        <td>Mobile Home, defined as HO7 or equivalent. Homeowners insurance sold to owners occupying or renting out the insured mobile home.</td>
+                    </tr>
+                </table>
+                <h3>Median Damage (0-2)</h3>
+                <table>
+                    <tr>
+                        <th>0</th>
+                        <td>No Damage (0% Damaged)</td>
+                    </tr>
+                    <tr>
+                        <th>0.5</th>
+                        <td>No Damage to Moderate Damage (Equal Counts of 0s and 1s)</td>
+                    </tr>
+                    <tr>
+                        <th>1</th>
+                        <td>Moderate Damage (1%-50% Damaged)</td>
+                    </tr>
+                    <tr>
+                        <th>1.5</th>
+                        <td>Moderate Damage to High Damage (Equal Counts of 1s and 2s)</td>
+                    </tr>
+                    <tr>
+                        <th>2</th>
+                        <td>High Damage (>50% Damaged)</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <p class="disclaimer">
+            Disclaimer: This map is for informational purposes only and may not represent a comprehensive account of all wildfire damage during the specified period. Information presented in this damage map should be used with caution, and levels of damage due to wildfires are volatile and subject to change due to evolving factors. Additionally, not all home types (such as apartments) are represented in this dataset as Cal Fire assessed damage on a limited category of property types. 
+        </p>
+
+
+        <!-- Second Tableau Dashboard: Insurance Map Dashboard -->
+        <h2 style="text-align: center;">Insurance Map Dashboard</h2>
+        <div class="wide-container">
+            <p class="description">
+                Explore historical insurance data on insurance policies and coverages. Filter by insurance metric such as deductible amounts, home type of interest, and year to view insurance trends and changes per zip code over time. Hover over the map directly to display detailed metrics and zip codes. (Data source: California Department of Insurance data from 2009 to 2021).
+            </p>
+        </div>
+        <div class="dashboard-container">
+            <div class="tableauEmbed" id="viz1731038506550">
+                <noscript>
+                    <a href="#">
+                        <img alt="Insurance Map Dashboard" src="https://public.tableau.com/static/images/DS/DS210ACalEmberInsuranceMapDashboard/InsuranceMapDashboard/1_rss.png" style="border: none" />
+                    </a>
+                </noscript>
+                <object class="tableauViz">
+                    <param name="host_url" value="https%3A%2F%2Fpublic.tableau.com%2F" />
+                    <param name="embed_code_version" value="3" />
+                    <param name="site_root" value="" />
+                    <param name="name" value="DS210ACalEmberInsuranceMapDashboard/InsuranceMapDashboard" />
+                    <param name="tabs" value="no" />
+                    <param name="toolbar" value="yes" />
+                    <param name="animate_transition" value="yes" />
+                    <param name="display_static_image" value="yes" />
+                    <param name="display_spinner" value="yes" />
+                    <param name="display_overlay" value="yes" />
+                    <param name="display_count" value="yes" />
+                    <param name="language" value="en-US" />
+                    <param name="filter" value="publish=yes" />
+                </object>
+            </div>
+            <div class="legend-container">
+                <label for="legend-select-2">Select Legend:</label>
+                <select id="legend-select-2">
+                    <option value="insurance-metrics" selected>Insurance Metrics</option>
+                    <option value="home-type">Home Type</option>
+                </select>
+                <div id="legend-content-2">
+                    <!-- Default Legend -->
+                    <h3>Insurance Metrics</h3>
+                    <table>
+                        <tr><th>Avg Deductible</th><td>The average deductible amount in dollars ($).</td></tr>
+                        <tr><th>Avg Fire Cov A</th><td>The average dollar ($) amount of insurance provided under Coverage A (Structure).</td></tr>
+                        <tr><th>Avg Fire Cov C</th><td>The average dollar ($) amount of insurance provided under Coverage C (Contents).</td></tr>
+                        <tr><th>Count of MERGED_P...</th><td>IGNORE (Technical Necessity, Disregard this Information).</td></tr>
+                        <tr><th>Earned Exposure</th><td>The number of exposure units earned during the calendar year (in exposure-years).</td></tr>
+                        <tr><th>Earned Premium</th><td>The dollar ($) amount of premium earned.</td></tr>
+                        <tr><th>Total Policies</th><td>The total number of policies in-effect during the calendar year.</td></tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <p class="disclaimer">
+            Disclaimer: This map is for informational purposes only and may not represent a comprehensive account of all insurance data in California. Additionally, note that years 2010, 2012, 2014, and 2016 are missing from the map, as these years were not collected by the California Department of Insurance. Furthermore, the map includes insurance companies with annual premiums exceeding $10,000,000 as this is what is collected by the California Department of Insurance. Thus companies that do not meet this requirement are not represented in this visual.
+        </p>
+
+
+        <!-- Third Tableau Dashboard: Insurance Trends Over Time Dashboard -->
+        <h2 style="text-align: center;">Insurance Trends Over Time Dashboard</h2>
+        <div class="wide-container">
+            <p class="description">
+                Explore insurance trends over time for particular zip codes and home types of interest. Filter by zip code, insurance metric, and home type to view year over year changes and patterns, and compare changes in multiple zip codes. Hover over line graphs to view detailed metrics, zip code, and year. (Data source: California Department of Insurance data from 2009 to 2021).
+            </p>
+        </div>
+        <div class="dashboard-container">
+            <div class="tableauEmbed" id="viz1731038512650">
+                <noscript>
+                    <a href="#">
+                        <img alt="Insurance Trends Over Time Dashboard" src="https://public.tableau.com/static/images/DS/DS210ACalEmberInsuranceTrendsOverTime/InsuranceTrendsOverTimeDashboard/1_rss.png" style="border: none" />
+                    </a>
+                </noscript>
+                <object class="tableauViz">
+                    <param name="host_url" value="https%3A%2F%2Fpublic.tableau.com%2F" />
+                    <param name="embed_code_version" value="3" />
+                    <param name="site_root" value="" />
+                    <param name="name" value="DS210ACalEmberInsuranceTrendsOverTime/InsuranceTrendsOverTimeDashboard" />
+                    <param name="tabs" value="no" />
+                    <param name="toolbar" value="yes" />
+                    <param name="animate_transition" value="yes" />
+                    <param name="display_static_image" value="yes" />
+                    <param name="display_spinner" value="yes" />
+                    <param name="display_overlay" value="yes" />
+                    <param name="display_count" value="yes" />
+                    <param name="language" value="en-US" />
+                    <param name="filter" value="publish=yes" />
+                </object>
+            </div>
+            <div class="legend-container">
+                <label for="legend-select-3">Select Legend:</label>
+                <select id="legend-select-3">
+                    <option value="insurance-metrics" selected>Insurance Metrics</option>
+                    <option value="home-type">Home Type</option>
+                </select>
+                <div id="legend-content-3">
+                    <!-- Default Legend -->
+                    <h3>Insurance Metrics</h3>
+                    <table>
+                        <tr><th>Avg Deductible</th><td>The average deductible amount in dollars ($).</td></tr>
+                        <tr><th>Avg Fire Cov A</th><td>The average dollar ($) amount of insurance provided under Coverage A (Structure).</td></tr>
+                        <tr><th>Avg Fire Cov C</th><td>The average dollar ($) amount of insurance provided under Coverage C (Contents).</td></tr>
+                        <tr><th>Count of MERGED_P...</th><td>IGNORE (Technical Necessity, Disregard this Information).</td></tr>
+                        <tr><th>Earned Exposure</th><td>The number of exposure units earned during the calendar year (in exposure-years).</td></tr>
+                        <tr><th>Earned Premium</th><td>The dollar ($) amount of premium earned.</td></tr>
+                        <tr><th>Total Policies</th><td>The total number of policies in-effect during the calendar year.</td></tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <p class="disclaimer">
+            Disclaimer: this visual is for informational purposes only and may not represent a comprehensive account of all insurance data in California. Additionally, note that years 2010, 2012, 2014, and 2016 are not collected by the California Department of Insurance, thus the linear trends noted during these years represent estimates which may deviate from actual annual insurance business during these years. Furthermore, the map includes insurance companies with annual premiums exceeding $10,000,000 as this is what is collected by the California Department of Insurance. Thus companies that do not meet this requirement are not represented in this visual.
+        </p>
+
+        <script>
+            function attachLegendHandler(dropdownId, contentId, dashboardId) {
+                document.getElementById(dropdownId).addEventListener('change', function () {
+                    const selectedLegend = this.value;
+                    fetch(`/get-legend?legend_type=${selectedLegend}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            document.getElementById(contentId).innerHTML = data.legend;
+                        })
+                        .catch(error => console.error(`Error fetching legend for ${dashboardId}:`, error));
+                });
+            }
+            attachLegendHandler('legend-select-2', 'legend-content-2', 'dashboard-2');
+            attachLegendHandler('legend-select-3', 'legend-content-3', 'dashboard-3');
+        </script>
+
+            
+    </main>
+</body>
+</html>

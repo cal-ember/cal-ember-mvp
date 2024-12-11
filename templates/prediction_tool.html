@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cal Ember - Prediction Tool</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='landing.css') }}">
+    <style>
+        /* Flex container to hold the prediction form and legend side by side */
+        .main-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 30px;
+            max-width: 1200px;
+            margin: 50px auto;
+        }
+
+        .prediction-container {
+            flex: 3;
+            text-align: center;
+            max-width: 600px;
+        }
+
+        .prediction-description {
+            font-size: 1.1em;
+            line-height: 1.6em;
+            color: #555;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            width: 100%;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .form-item {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            gap: 10px;
+        }
+
+        .form-item label {
+            flex: 1;
+            text-align: right;
+            font-size: 1em;
+            color: #555;
+        }
+
+        .form-item select,
+        .form-item input {
+            flex: 2;
+            padding: 10px;
+            font-size: 1em;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+
+        .form-item select {
+            appearance: none;
+            background: url('data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/2000/svg" width="10" height="6" viewBox="0 0 10 6"><path fill="%23333" d="M0 0l5 6 5-6z"/></svg>') no-repeat right 10px center/10px 6px;
+        }
+
+        .form-item select:hover {
+            background-color: #fff;
+        }
+
+        .btn-submit {
+            padding: 10px 20px;
+            font-size: 1.1em;
+            font-weight: bold;
+            color: #fff;
+            background: linear-gradient(45deg, #ff7b00, #ff9700);
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: calc(100% - 30px);
+            max-width: 500px;
+            margin: 10px auto;
+        }
+
+        .btn-submit:hover {
+            background: linear-gradient(45deg, #ff9700, #ff7b00);
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .disclaimer {
+            text-align: center;
+            margin: 20px auto;
+            max-width: 600px;
+            font-size: 0.9em;
+            color: #555;
+        }
+
+        /* Legend Styling */
+        .legend-container {
+            flex: 0.75;
+            font-size: 0.7em;
+            color: #333;
+            border: 1px solid #ddd;
+            padding: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            background-color: #f9f9f9;
+
+            /* Add this to align the top with the description */
+            margin-top: 50px;
+            /* Adjust the value as needed */
+        }
+
+        .legend-container h3 {
+            margin-top: 0;
+        }
+
+        .legend-container table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        .legend-container th,
+        .legend-container td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        .legend-container th {
+            font-weight: bold;
+            background-color: #f2f2f2;
+        }
+
+        /* Tooltip styling */
+        .info-tooltip {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            line-height: 20px;
+            text-align: center;
+            border-radius: 50%;
+            background-color: #007bff;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            position: relative;
+            font-size: 12px;
+            margin-right: 0px;
+        }
+
+        .tooltip-text {
+            visibility: hidden;
+            width: 200px;
+            background-color: #333;
+            color: #fff;
+            text-align: left;
+            border-radius: 5px;
+            padding: 10px;
+            position: absolute;
+            z-index: 1;
+            bottom: 130%;
+            /* Position above the tooltip icon */
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+            font-size: 0.85em;
+            pointer-events: none;
+        }
+
+        .tooltip-text a {
+            color: #f9c74f;
+            text-decoration: underline;
+            font-weight: bold;
+        }
+
+        .tooltip-text::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            /* Arrow pointing downward */
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 5px;
+            border-style: solid;
+            border-color: #333 transparent transparent transparent;
+        }
+
+
+        .info-tooltip:hover .tooltip-text,
+        .info-tooltip:focus-within .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+            pointer-events: auto;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="header-container">
+            <div class="logo-container">
+                <a href="/">
+                    <img src="{{ url_for('static', filename='images/calember-logo.png') }}" alt="Cal Ember Logo"
+                        class="logo">
+                </a>
+            </div>
+            <nav class="main-nav">
+                <a href="/" class="nav-link">Home</a>
+                <a href="/fire-hazard-lookup" class="nav-link">Fire Hazard Lookup</a>
+                <a href="/prediction-tool" class="nav-link">Fire Damage Prediction</a>
+                <a href="/dashboard" class="nav-link">Dashboards</a>
+                <a href="/about-us" class="nav-link">About Us</a>
+            </nav>
+        </div>
+    </header>
+    <main role="main">
+        <div class="main-container">
+            <div class="prediction-container">
+                <h1>Fire Damage Prediction Tool</h1>
+                <p class="prediction-description">
+                    Enter the following details about your property to receive a fire damage prediction based on
+                    historical data and our model. This tool helps
+                    you
+                    better understand potential fire damage your property may incur. Data to create the prediction tool
+                    is from the <a
+                        href="https://www.insurance.ca.gov/0400-news/0200-studies-reports/0250-homeowners-study/#A"
+                        target="_blank">California Department of Insurance</a>
+                    and the <a
+                        href="https://gis.data.cnra.ca.gov/datasets/CALFIRE-Forestry::fire-hazard-severity-zones-in-sra-effective-april-1-2024-with-lra-recommended-2007-2011"
+                        target="_blank" rel="noopener noreferrer">California Department of Forestry and Fire
+                        Protection</a>.
+                </p>
+                <form id="predictionForm" class="form-group">
+                    <div class="form-item">
+                        <label for="longitude"><b>Longitude:</b></label>
+                        <span class="info-tooltip">i
+                            <span class="tooltip-text">
+                                Find the latitude and longitude of your house here:
+                                <a href="https://www.latlong.net" target="_blank">https://www.latlong.net</a>
+                            </span>
+                        </span>
+                        <input type="text" id="longitude" name="longitude" placeholder="Enter Longitude (Required)"
+                            required>
+                    </div>
+
+                    <div class="form-item">
+                        <label for="latitude"><b>Latitude:</b></label>
+                        <span class="info-tooltip">i
+                            <span class="tooltip-text">
+                                Find the latitude and longitude of your house here:
+                                <a href="https://www.latlong.net" target="_blank">https://www.latlong.net</a>
+                            </span>
+                        </span>
+                        <input type="text" id="latitude" name="latitude" placeholder="Enter Latitude (Required)"
+                            required>
+                    </div>
+
+                    <div class="form-item">
+                        <label for="propertyTax"><b>Property Tax:</b></label>
+                        <span class="info-tooltip">i
+                            <span class="tooltip-text">
+                                Find the most recent "Tax Assessment" for your property on Zillow.
+                                Visit: <a href="https://www.zillow.com" target="_blank">Zillow</a>, then scroll down to
+                                the
+                                "Tax Assessment" section for this value.
+                            </span>
+                        </span>
+                        <input type="number" id="propertyTax" name="propertyTax"
+                            placeholder="Enter Property Tax Amount (Required)" required>
+                    </div>
+
+                    <div class="form-item">
+                        <label for="zipCode"><b>ZIP Code:</b></label>
+                        <input type="text" id="zipCode" name="zipCode" placeholder="Enter ZIP Code (Required)" required>
+                    </div>
+
+                    <p class="prediction-description" style="max-width: none; width: 100%; text-align: center;">
+                        <b>The housing characteristics below are highly recommended but not required.</b> If you
+                        don’t have this information regarding your house, we suggest you input your best guess after
+                        reading this
+                        <a href="/static/legend.pdf" target="_blank" rel="noopener noreferrer"> document</a>, visiting
+                        <a href="https://www.zillow.com" target="_blank" rel="noopener noreferrer">Zillow.com</a> for
+                        more information, or selecting “Other/Unknown” for each dropdown.
+                    </p>
+
+                    <div class="form-item">
+                        <label for="windowType">Window Type:</label>
+                        <select id="windowType" name="windowType">
+                            <option value="1">Multi Pane</option>
+                            <option value="2">Single Pane</option>
+                            <option value="3" selected>Other/Unknown</option>
+                        </select>
+                    </div>
+
+                    <div class="form-item">
+                        <label for="roofType">Roof Type:</label>
+                        <select id="roofType" name="roofType">
+                            <option value="1">Asphalt</option>
+                            <option value="2">Metal</option>
+                            <option value="3">Fire Resistant</option>
+                            <option value="4">Tile</option>
+                            <option value="5" selected>Other/Unknown</option>
+                        </select>
+                    </div>
+                    <div class="form-item">
+                        <label for="ventScreenType">Vent Screen Type:</label>
+                        <select id="ventScreenType" name="ventScreenType">
+                            <option value="1">No Vent Screen</option>
+                            <option value="2">Mesh Screen (≤ ⅛ inch)</option>
+                            <option value="3">Mesh Screen (> ⅛ inch)</option>
+                            <option value="4" selected>Other/Unknown</option>
+                        </select>
+                    </div>
+                    <div class="form-item">
+                        <label for="groundDeck">Ground Deck Type:</label>
+                        <select id="groundDeck" name="groundDeck">
+                            <option value="1">Wood</option>
+                            <option value="2">Masonry/Concrete</option>
+                            <option value="3">No Deck</option>
+                            <option value="4" selected>Other/Unknown</option>
+                        </select>
+                    </div>
+                    <div class="form-item">
+                        <label for="elevatedDeck">Elevated Deck:</label>
+                        <select id="elevatedDeck" name="elevatedDeck">
+                            <option value="1">Wood</option>
+                            <option value="2">No Deck</option>
+                            <option value="3" selected>Other/Unknown</option>
+                        </select>
+                    </div>
+                    <div class="form-item">
+                        <label for="exteriorSiding">Exterior Siding:</label>
+                        <select id="exteriorSiding" name="exteriorSiding">
+                            <option value="1">Wood</option>
+                            <option value="2">Stucco/Brick</option>
+                            <option value="3">Combustible (e.g., fiber)</option>
+                            <option value="4" selected>Other/Unknown</option>
+                        </select>
+                    </div>
+                    <div class="form-item">
+                        <label for="fenceType">Fence Type:</label>
+                        <select id="fenceType" name="fenceType">
+                            <option value="1">No Fence Attached</option>
+                            <option value="2">Non-Combustible Fence</option>
+                            <option value="3">Combustible Fence</option>
+                            <option value="4" selected>Other/Unknown</option>
+                        </select>
+                    </div>
+                    <div class="form-item">
+                        <label for="eaveType">Eave Type:</label>
+                        <select id="eaveType" name="eaveType">
+                            <option value="1">Enclosed</option>
+                            <option value="2">Unenclosed</option>
+                            <option value="3" selected>Other/Unknown</option>
+                        </select>
+                    </div>
+                    <!-- <div class="form-item">
+                        <label for="defensiveActions">Defensive Actions:</label>
+                        <span class="info-tooltip">i
+                            <span class="tooltip-text">
+                                Examples include creating defensible space, installing fire-resistant materials,
+                                trimming
+                                trees, adding fire-resistant plants, sprinkler systems, etc.
+                            </span>
+                        </span>
+                        <select id="defensiveActions" name="defensiveActions">
+                            <option value="1">Yes</option>
+                            <option value="0">No</option>
+                        </select>
+                    </div> -->
+                    <div class="form-item">
+                        <label for="patioCover">Patio Cover:</label>
+                        <select id="patioCover" name="patioCover">
+                            <option value="1">Combustible</option>
+                            <option value="2">No Cover</option>
+                            <option value="3" selected>Other/Unknown</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn-submit">Predict</button>
+                </form>
+                <div id="result-container" style="margin-top: 20px;"></div>
+            </div>
+
+
+            <div class="legend-container">
+                <h3>Legend</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Damage Level</th>
+                            <th>Explanation</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>0 - No Damage Predicted</td>
+                            <td>
+                                <strong>Property could be 0% Damaged</strong><br />
+                                In the case of a wildfire event in which your home is inside or within 100 meters of the
+                                wildfire perimeter, your home is predicted to have no significant damage to the
+                                structure.
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>1 - Moderate Damage Predicted</td>
+                            <td>
+                                <strong>Property could be 1% - 50% Damaged</strong><br />
+                                In the case of a wildfire event in which your home is inside or within 100 meters of the
+                                wildfire perimeter, your home is predicted to have moderate levels of damage that can
+                                range from 1 to 50% of your structure being impacted.
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>2 - Severe Damage Predicted</td>
+                            <td>
+                                <strong>Property could be &gt; 50% Damaged</strong><br />
+                                In the case of a wildfire event in which your home is inside or within 100 meters of the
+                                wildfire perimeter, your home is predicted to have significant levels of damage
+                                impacting anywhere between 50-100% of your structure.
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Suggestions to Maintain Safety</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <ul>
+                                    <li>Regularly clear any dead vegetation, leaves, or debris within 30 feet of your
+                                        home.</li>
+                                    <li>Ensure your roof and exterior walls are constructed with fire-resistant
+                                        materials.</li>
+                                    <li>Install ember-resistant vents to prevent embers from entering your home.</li>
+                                    <li>Additional resources:
+                                        <a
+                                            href="https://www.nfpa.org/education-and-research/wildfire/firewise-usa">Firewise</a>,
+                                        <a href="https://www.fire.ca.gov/">CalFire</a>
+                                    </li>
+                                </ul>
+                                <em>Disclaimer: the predictions provided by this tool are estimates and should be used
+                                    with caution.</em>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <p class="disclaimer">
+            Please note: The predictions provided by this tool are estimates and should be used as a guide. None of your
+            information will be stored.
+        </p>
+    </main>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const form = document.getElementById('predictionForm');
+            if (form) {
+                form.addEventListener('submit', async function (event) {
+                    event.preventDefault();
+
+                    // Initialize an empty object to hold form data
+                    const jsonData = {};
+
+                    // Collect all input elements in the form
+                    const formElements = form.elements;
+
+                    // Iterate through each element to add to jsonData
+                    for (let i = 0; i < formElements.length; i++) {
+                        const element = formElements[i];
+
+                        // Skip elements that do not have a name attribute (e.g., buttons)
+                        if (!element.name) {
+                            continue;
+                        }
+
+                        jsonData[element.name] = element.value;
+                    }
+
+                    console.log("Payload to send:", jsonData); // Debug log
+
+                    try {
+                        const response = await fetch('/predict', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(jsonData) // Convert jsonData to JSON string
+                        });
+
+                        if (!response.ok) {
+                            const errorText = await response.text();
+                            console.error("Server error:", errorText);
+                            alert(`Error: ${response.statusText} - ${errorText}`);
+                            return;
+                        }
+
+                        const result = await response.json();
+                        console.log("Server response:", result);
+
+                        // Extract the prediction and round it to zero decimals
+                        const prediction = Math.round(result.prediction);
+
+                        // Determine the output message and style based on the prediction value
+                        let predictionMessage = "";
+                        let predictionColor = "";
+
+                        switch (prediction) {
+                            case 0:
+                                predictionMessage = "0 - No Damage Predicted";
+                                predictionColor = "green";
+                                break;
+                            case 1:
+                                predictionMessage = "1 - Moderate Damage Predicted";
+                                predictionColor = "orange";
+                                break;
+                            case 2:
+                                predictionMessage = "2 - Severe Damage Predicted";
+                                predictionColor = "red";
+                                break;
+                            default:
+                                predictionMessage = "Unknown Prediction";
+                                predictionColor = "black";
+                        }
+
+                        // Display the prediction below the form with appropriate styling
+                        const resultContainer = document.getElementById('result-container');
+                        if (resultContainer) {
+                            resultContainer.innerHTML = `
+                                <div style="padding: 20px; font-size: 1.2em; font-family: inherit; color: #fff; background-color: ${predictionColor}; border-radius: 8px; max-width: 500px; margin: 20px auto;">
+                                    ${predictionMessage}
+                                </div>
+                            `;
+                        } else {
+                            console.error("Result container not found in HTML");
+                        }
+
+                    } catch (error) {
+                        console.error('Error during prediction request:', error);
+                    }
+                });
+            } else {
+                console.error("Form element not found");
+            }
+        });
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CalEmber - Landing Page</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='landing.css') }}">
+    <link rel="preload" as="image" href="{{ url_for('static', filename='images/cal-ember-background.webp') }}">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            color: #fff;
+            background: url("{{ url_for('static', filename='images/cal-ember-background.webp') }}") no-repeat center center fixed, #1e1e1e;
+            background-size: cover !important;
+        }
+
+        /* Background Overlay */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5); /* Overlay for readability */
+            z-index: -1;
+        }
+
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            margin-top: 100px;
+        }
+
+        .hero h1 {
+            font-size: 3em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .hero h1 .highlight {
+            color: #ff7b00;
+        }
+
+        .hero h1 .subtitle {
+            color: white;
+        }
+
+        .hero .subheading {
+            font-size: 1.4em;
+            max-width: 700px;
+            margin: 20px auto;
+            line-height: 1.4em;
+            text-align: center;
+        }
+
+        .divider {
+            width: 60%;
+            height: 5px;
+            background: #fff;
+            margin: 20px auto;
+            border-radius: 50px;
+        }
+
+        /* Products Section */
+        .products {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        .product-box {
+            background: #cab9ae;
+            border: none;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            width: 300px;
+            color: black;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 250px; /* Ensure boxes are of uniform height */
+        }
+
+        .product-box:hover {
+            transform: scale(1.05);
+        }
+
+        .product-box h3 {
+            font-size: 1.5em;
+            margin-bottom: 15px;
+        }
+
+        .product-box p {
+            font-size: 1em;
+            line-height: 1.4em;
+            flex-grow: 1;
+            margin-bottom: 15px;
+        }
+
+        .product-box .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background: linear-gradient(45deg, #ff7b00, #ff9700);
+            color: #fff;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+
+        .product-box .btn:hover {
+            background: linear-gradient(45deg, #ff9700, #ff7b00);
+        }
+
+        footer {
+            margin-top: 40px;
+            text-align: center;
+            font-size: 0.8em;
+            color: #ccc;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="header-container">
+            <div class="logo-container">
+                <a href="/">
+                    <img src="{{ url_for('static', filename='images/calember-logo.png') }}" alt="Cal Ember Logo" class="logo">
+                </a>
+            </div>
+            <nav class="main-nav">
+                <a href="/" class="nav-link active">Home</a>
+                <a href="/fire-hazard-lookup" class="nav-link">Fire Hazard Lookup</a>
+                <a href="/prediction-tool" class="nav-link">Fire Damage Prediction</a>
+                <a href="/dashboard" class="nav-link">Dashboards</a>
+                <a href="/about-us" class="nav-link">About Us</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <h1>
+            <span class="highlight">CalEmber</span> 
+            <span class="subtitle">- A Fire Damage & Insurance Assessment Tool</span>
+        </h1>
+        <div class="divider"></div>
+        <p class="subheading">
+            Empowering California homeowners with<br>
+            data-driven insights on fire damage and insurance rates.<br>
+            Transparent. Reliable. Trusted.
+        </p>
+    </section>
+
+    <!-- Products Section -->
+    <main>
+        <div class="products">
+
+            <div class="product-box">
+                <h3>Fire Hazard Lookup</h3>
+                <p>Input your zip code to find out the average fire hazard severity score for your area.</p>
+                <a href="/fire-hazard-lookup" class="btn">Use Lookup Tool</a>
+            </div>
+
+            <div class="product-box">
+                <h3>Fire Damage Prediction</h3>
+                <p>Input your address and house information to get a predicted evaluation of potential fire damage and explore insurance options.</p>
+                <a href="/prediction-tool" class="btn">Use Prediction Tool</a>
+            </div>
+
+            <div class="product-box">
+                <h3>Interactive Dashboards</h3>
+                <p>Explore interactive dashboards highlighting average fire damage and insurance metrics per zip code.</p>
+                <a href="/dashboard" class="btn">Explore Dashboards</a>
+            </div>
+
+        </div>
+    </main>
+
+    <footer>
+        &copy; 2024 CalEmber. All rights reserved.
+    </footer>
+</body>
+</html>

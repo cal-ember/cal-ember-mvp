@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cal Ember - Fire Hazard Lookup</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='landing.css') }}">
+    <style>
+        /* Center and modernize the input form */
+        .lookup-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            margin: 50px auto;
+        }
+
+        .lookup-description {
+            font-size: 1.1em;
+            line-height: 1.6em;
+            color: #555;
+            max-width: 600px;
+            margin-bottom: 30px;
+        }
+
+        .lookup-description a {
+            color: #007BFF;
+            text-decoration: none;
+        }
+
+        .lookup-description a:hover {
+            text-decoration: underline;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 15px;
+            font-size: 1em;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        input[type="text"]:focus {
+            border-color: #007BFF;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+            outline: none;
+        }
+
+        .btn-submit {
+            background: linear-gradient(45deg, #ff7b00, #ff9700);
+            color: #fff;
+            border: none;
+            padding: 12px 25px;
+            font-size: 1.1em;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-submit:hover {
+            background: linear-gradient(45deg, #ff9700, #ff7b00);
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Table styling */
+        .result-table {
+            margin: 30px auto;
+            border-collapse: collapse;
+            width: 50%;
+            text-align: center;
+        }
+
+        .result-table th, .result-table td {
+            padding: 10px;
+            border: 1px solid #ddd;
+        }
+
+        .result-table th {
+            background-color: #f4f4f4;
+        }
+
+        /* Color coding based on risk category */
+        .low-risk {
+            background-color: #a6d96a; /* Light green */
+        }
+
+        .moderate-risk {
+            background-color: #fdae61; /* Orange */
+        }
+
+        .high-risk {
+            background-color: #f46d43; /* Red */
+            color: #fff;
+        }
+
+        .very-high-risk {
+            background-color: #d73027; /* Dark red */
+            color: #fff;
+        }
+
+        /* Disclaimer styling */
+        .disclaimer {
+            margin-top: 20px;
+            font-size: 0.9em;
+            color: #777;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <div class="logo-container">
+                <a href="/">
+                    <img src="{{ url_for('static', filename='images/calember-logo.png') }}" alt="Cal Ember Logo" class="logo">
+                </a>
+            </div>
+            <nav class="main-nav">
+                <a href="/" class="nav-link">Home</a>
+                <a href="/fire-hazard-lookup" class="nav-link">Fire Hazard Lookup</a>
+                <a href="/prediction-tool" class="nav-link">Fire Damage Prediction</a>
+                <a href="/dashboard" class="nav-link">Dashboards</a>
+                <a href="/about-us" class="nav-link">About Us</a>
+            </nav>
+        </div>
+    </header>
+    <main role="main">
+        <div class="lookup-container">
+            <h1>Fire Hazard Lookup</h1>
+            <p class="lookup-description">
+                This tool uses the <a href="https://data.ca.gov/dataset/fire-hazard-severity-zones-in-sra-effective-april-1-2024-with-lra-recommended-2007-2011" target="_blank" rel="noopener noreferrer">Fire Hazard Severity Zones</a> from the California Department of Forestry & Fire Protection. Fire hazard severity scores range from 1 to 3, representing Moderate, High, and Very High severity, respectively. These scores are calculated based on factors such as fuel loading, slope, fire weather, and wind conditions.
+            </p>
+            <form id="lookupForm" class="form-group">
+                <input type="text" id="zipcode" name="zipcode" placeholder="Enter your zip code" required>
+                <button type="submit" class="btn-submit">Search</button>
+            </form>
+        </div>
+        <div id="result-container"></div>
+        <p class="disclaimer">
+            Please note: Not all zip codes may be included in the database. Results are based on the Fire Hazard Severity Zones dataset. None of your
+            information will be stored.
+        </p>
+    </main>
+
+    <script>
+        document.getElementById('lookupForm').addEventListener('submit', async function (event) {
+            event.preventDefault();
+            const zipcode = document.getElementById('zipcode').value;
+            const response = await fetch('/fire-hazard-lookup', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ zipcode }),
+            });
+            const container = document.getElementById('result-container');
+            const result = await response.json();
+            if (result.error) {
+                container.innerHTML = `<p style="color: red;">${result.error}</p>`;
+            } else {
+                container.innerHTML = `
+                    <table class="result-table">
+                        <thead>
+                            <tr>
+                                <th>ZIP Code</th>
+                                <th>FHSZ</th>
+                                <th>Risk Category</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="${result.risk_class}">
+                                <td>${result.zip_code}</td>
+                                <td>${result.fhsz.toFixed(2)}</td>
+                                <td>${result.risk_category}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                `;
+            }
+        });
+    </script>
+</body>
+</html>
