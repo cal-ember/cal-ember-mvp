@@ -1,9 +1,53 @@
-# Fire Damage Dashboard, Prediction, and Look up Tool
+# 🔥 CalEmber: Fire Damage Prediction & Insurance Assessment Tool
 
-## Project Description
-A simple web app that embeds a Tableau dashboard and allows users to input data for predictions using an ML model hosted on AWS SageMaker.
+
+
+## 📝 Description  
+Calember is a machine learning-powered tool designed to assess fire damage risk for insurance policies. By analyzing structural and environmental attributes, it provides damage classification and enhances risk assessment for current and potential California homeowners.
 
 ![Demo](https://github.com/cal-ember/cal-ember-mvp/blob/master/cal_ember.gif)
+
+## 💡 Features  
+- ✅ Predicts fire damage severity based on property attributes  
+- ✅ Uses advanced machine learning models for classification  
+- ✅ Enables potential and current homeowners to assess risk effectively  
+- ✅ Provides a user-friendly interface for damage classification  
+- ✅ **Interactive Tableau Dashboards** for data visualization  
+
+## 🛠️ Built with  
+- **Backend:** Python, Flask, AWS SageMaker  
+- **Frontend:** HTML, CSS, JavaScript  
+- **Machine Learning:** Scikit-learn, XGBoost, Pandas, NumPy  
+- **Deployment:** Heroku  
+- **Data Visualization:** Tableau  
+
+## 📊 Models Used  
+- XGBoost  
+- LightGBM  
+- Random Forest  
+- Logistic Regression  
+
+## 📂 Dataset  
+- Includes structural and environmental data for fire damage prediction  
+- Features: property attributes, fire history, environmental factors  
+
+## 📊 Tableau Dashboards  
+### 🔥 Damage Map Dashboard  
+Explore historical median property damage levels caused by wildfires per zip code.  
+**[View Dashboard](https://public.tableau.com/views/DS210ACalEmberDamagesMap/DamageMapDashboard)**  
+
+### 🏡 Insurance Map Dashboard  
+Explore historical insurance data, including policies and coverages, filtered by home type and year.  
+**[View Dashboard](https://public.tableau.com/views/DS210ACalEmberInsuranceMapDashboard/InsuranceMapDashboard)**  
+
+### 📈 Insurance Trends Over Time Dashboard  
+Analyze insurance trends over time for specific zip codes and home types, comparing year-over-year changes.  
+**[View Dashboard](https://public.tableau.com/views/DS210ACalEmberInsuranceTrendsOverTime/InsuranceTrendsOverTimeDashboard)**  
+
+## 🔗 Project Report & Code  
+- [Final Report](link-to-your-report)  
+- [Code Repository](link-to-your-code)  
+
 
 ## Setup Instructions
 
