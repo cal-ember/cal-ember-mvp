@@ -22,7 +22,7 @@ Calember is a machine learning-powered tool designed to assess fire damage risk 
 - **Data Visualization:** Tableau  
 
 ## 📊 Models Used  
-- XGBoost  
+- XGBoost (Final Model)
 - LightGBM  
 - Random Forest  
 - Logistic Regression  
@@ -58,17 +58,17 @@ Analyze insurance trends over time for specific zip codes and home types, compar
 ## Setup Instructions
 
 1. Clone the repository:
-   ```bash
+  ```bash
    git clone https://github.com/your-org/your-repo.git
    ```
 
 2. (optional) Activate virtual environment
-  ```
+ ``` 
   python3 -m venv env
   source env/bin/activate
 ```
 3. Install required dependencies
-   ```
+  ```
    pip install -r requirements.txt
    ```
 4. To run, either run
