@@ -1,7 +1,9 @@
-# Dashboard & ML Lookup Tool
+# Fire Damage Dashboard, Prediction, and Look up Tool
 
 ## Project Description
 A simple web app that embeds a Tableau dashboard and allows users to input data for predictions using an ML model hosted on AWS SageMaker.
+
+![Demo](https://github.com/cal-ember/cal-ember-mvp/blob/master/cal_ember.gif)
 
 ## Setup Instructions
 
