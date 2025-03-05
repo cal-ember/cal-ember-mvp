@@ -46,7 +46,13 @@ Analyze insurance trends over time for specific zip codes and home types, compar
 
 ## 🔗 Project Report & Code  
 - [Final Report](link-to-your-report)  
-- [Code Repository](link-to-your-code)  
+- [Code Repository](link-to-your-code)
+
+## 👥 Contributors  
+- **Michelle Cheung** [(@mcheung-cal)](https://github.com/mcheung-cal)  
+- **Ishika Prashar** [(@ishikaprashar)](https://github.com/ishikaprashar)  
+- **Hao Xie** [(@haoxie912)](https://github.com/haoxie912)  
+- **Jackie Wang** [(@jackieeewang)](https://github.com/jackieeewang) 
 
 
 ## Setup Instructions
