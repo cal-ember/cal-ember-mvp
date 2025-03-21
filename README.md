@@ -9,7 +9,7 @@ Calember is a machine learning-powered tool designed to assess fire damage risk 
 
 ## 🔗 Links
 - [Capstone Project Page](https://www.ischool.berkeley.edu/projects/2024/calember-fire-damage-prediction-insurance-assessment-tool)
-- [Model Code](https://github.com/cal-ember/cal-ember-mvp/tree/master)
+- [Model Code](https://github.com/cal-ember/cal-ember-mvp/blob/master/CalEmber_Modeling.ipynb)
 
 ## 💡 Features  
 - ✅ Predicts fire damage severity based on property attributes  
